@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relacionar Columnas</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- INICIO -->
+<section id="home" class="screen active">
+  <div class="hero">
+    <div class="logo" aria-hidden="true">📚✏️🧩</div>
+    <h1>Relacionar Columnas</h1>
+    <p class="lead">Une cada elemento de una columna con su pareja en la otra.</p>
+    <ol class="howto">
+      <li><b>Arrastra</b> un elemento hasta su pareja, o haz <b>clic</b> en uno y luego en el otro.</li>
+      <li>Si aciertas, la pareja se pone <b class="g">verde</b> y queda bloqueada.</li>
+      <li>Si fallas, ¡inténtalo de nuevo! Completa todas las parejas.</li>
+    </ol>
+    <label class="pick">Actividad
+      <select id="homeSelect"></select>
+    </label>
+    <div class="btns">
+      <button id="btnStart" class="btn big green">▶ COMENZAR JUEGO</button>
+      <button id="btnConfig" class="btn big violet">⚙ CONFIGURAR ACTIVIDAD</button>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIGURACIÓN -->
+<section id="admin" class="screen">
+  <div class="panel">
+    <header class="bar"><h2>⚙ Configurar actividad</h2><button id="aBack" class="btn small ghost">← Volver</button></header>
+
+    <div class="card-box">
+      <h3>Gestión de actividades</h3>
+      <div class="row">
+        <select id="aSaved" aria-label="Actividades guardadas"></select>
+        <button id="aLoad" class="btn small teal">Cargar / editar</button>
+        <button id="aDelete" class="btn small red">Eliminar</button>
+        <button id="aReset" class="btn small ghost">Reiniciar configuración</button>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3>Configuración del juego</h3>
+      <div class="grid">
+        <label>Título de la actividad<input id="aTitle" maxlength="60"></label>
+        <label>Modalidad
+          <select id="aMode">
+            <option value="wi">Palabra - Imagen</option>
+            <option value="iw">Imagen - Palabra</option>
+            <option value="ww">Palabra - Palabra</option>
+            <option value="ii">Imagen - Imagen</option>
+          </select></label>
+        <label>Cantidad de parejas a jugar<input id="aCount" type="number" min="2" max="12"></label>
+        <label>Tiempo límite en segundos (0 = sin límite)<input id="aTime" type="number" min="0" max="3600"></label>
+        <label class="check"><input id="aSound" type="checkbox"> Sonidos activados</label>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h3>Parejas <span id="aPairCount" class="tag"></span></h3>
+      <div id="aPairs"></div>
+      <button id="aAdd" class="btn small teal">+ Agregar pareja</button>
+    </div>
+
+    <div class="btns">
+      <button id="aSave" class="btn big green">💾 GUARDAR ACTIVIDAD</button>
+      <button id="aPlay" class="btn big violet">▶ GUARDAR Y JUGAR</button>
+    </div>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="game" class="screen">
+  <header class="gbar">
+    <h2 id="gTitle"></h2>
+    <div class="stats">
+      <span class="chip">✅ <b id="sOk">0</b></span>
+      <span class="chip">🎯 <b id="sTry">0</b></span>
+      <span class="chip">❌ <b id="sErr">0</b></span>
+      <span class="chip" id="chipTime">⏱ <b id="sTime">0:00</b></span>
+    </div>
+    <div class="gbtns">
+      <button id="gRestart" class="btn small teal">↻ REINICIAR</button>
+      <button id="gSound" class="btn small ghost" aria-label="Sonido">🔊</button>
+      <button id="gExit" class="btn small red">SALIR</button>
+    </div>
+  </header>
+  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="pBar"></div><span id="pTxt">0%</span></div>
+  <p id="msg" class="msg" aria-live="polite">&nbsp;</p>
+  <div id="board" class="board">
+    <svg id="lines" aria-hidden="true"></svg>
+    <div id="colL" class="col"></div>
+    <div id="colR" class="col"></div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section id="result" class="screen">
+  <div class="hero">
+    <div class="logo" id="rIcon">🏆</div>
+    <h1 id="rTitle">¡Felicidades, has completado la actividad!</h1>
+    <div class="results">
+      <div><b id="rScore">0</b><span>Puntuación</span></div>
+      <div><b id="rOk">0</b><span>Correctas</span></div>
+      <div><b id="rErr">0</b><span>Errores</span></div>
+      <div><b id="rTime">0:00</b><span>Tiempo</span></div>
+      <div><b id="rPerf">0%</b><span>Rendimiento</span></div>
+    </div>
+    <div class="btns">
+      <button id="rAgain" class="btn big green">↻ VOLVER A JUGAR</button>
+      <button id="rExit" class="btn big red">SALIR</button>
+    </div>
+  </div>
+</section>
+
+<!-- CUENTA REGRESIVA -->
+<div id="countdown" class="overlay" aria-live="assertive"><div id="cdNum"></div></div>
+
+<!-- MODAL SALIR -->
+<div id="modal" class="overlay modal" role="dialog" aria-modal="true" aria-labelledby="mText">
+  <div class="dialog">
+    <div class="logo" aria-hidden="true">🚪</div>
+    <p id="mText">¿Estás seguro de que deseas salir del juego? Tu progreso actual podría perderse.</p>
+    <div class="btns">
+      <button id="mStay" class="btn big green">CONTINUAR JUGANDO</button>
+      <button id="mLeave" class="btn big red">SÍ, SALIR</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div id="cModal" class="overlay modal" role="dialog" aria-modal="true" aria-labelledby="cText">
+  <div class="dialog">
+    <div class="logo" aria-hidden="true">🗑️</div>
+    <p id="cText"></p>
+    <div class="btns">
+      <button id="cNo" class="btn big green">CANCELAR</button>
+      <button id="cYes" class="btn big red">SÍ, ELIMINAR</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+<script src="js/script.js"></script>
+</body>
+</html>
